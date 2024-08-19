@@ -1,9 +1,12 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 import '../App.css';
+import { EventsContext } from '../utils/EventsContext';
 
 const EventForm = (props) => {
+
+    const {events, setEvents} = useContext(EventsContext);
 
     const [eventType, setEventType] = useState(props.event.type || "");
     const [eventTitle, setEventTitle] = useState(props.event.title || "");
@@ -26,32 +29,28 @@ const EventForm = (props) => {
     
             //If events array already exist append the new event, else make one
             if(localStorage.getItem(props.date)) {
-    
                 const eventsArray = JSON.parse(localStorage.getItem(props.date));
                 eventsArray.push(newEvent);
     
+                setEvents(eventsArray);
                 localStorage.setItem(props.date, JSON.stringify(eventsArray));
     
             } else {
-                const eventsArray = [];
-                eventsArray[0] = newEvent;
-    
-                localStorage.setItem(props.date, JSON.stringify(eventsArray));
+                setEvents([newEvent]);
+                localStorage.setItem(props.date, JSON.stringify([newEvent]));
             }
 
 
         //If user wants to upadate a pre-existing event
         } else if(props.toDo === "editEvent") {
-            const eventsArray = JSON.parse(localStorage.getItem(props.date));
-
-            eventsArray.forEach(event => {
+            events.forEach(event => {
                 if(event.title === oldEvent.title) {
                     event.type = eventType;
                     event.title = eventTitle;
                     event.description = eventDescription;
                 }
             });
-            localStorage.setItem(props.date, JSON.stringify(eventsArray));
+            localStorage.setItem(props.date, JSON.stringify(events));
         }
     }
    

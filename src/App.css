@@ -9,10 +9,20 @@ button {
   background: none;
 }
 
-.navbar {
+.App-header .navbar {
   width: 100%;
   padding: .5rem !important; 
   border-bottom: 1px solid black;
+}
+
+.navbar .logo {
+  display: flex;
+}
+
+.logo img {
+  height: 50px;
+  width: 50px;
+  margin: 0 1rem 0 1rem;
 }
 
 .btn-success {
@@ -79,9 +89,10 @@ button {
   padding: 10px;
   right: 0;
   bottom: 0;
-  border-radius: 50%;
+  border-radius: 100%;
   outline: 0;
-  font-size: xxx-large;
+  display: inline-flex;
+  font-size: x-large;
 }
 
 /* Calendar */
@@ -92,7 +103,21 @@ button {
 
 .react-calendar {
   width: 100% !important;
+  border: none !important;
   padding: 1rem;
+}
+
+.react-calendar__navigation button {
+  font-size: x-large !important;
+}
+
+.react-calendar__tile--now {
+  background: #00addf !important;
+  color: #f9f9f9;
+}
+
+.react-calendar__tile {
+  line-height: 2rem !important;
 }
 
 .selected-date {
@@ -202,6 +227,10 @@ button {
   }
 }
 
+.event-type-selector {
+  margin: .5rem;
+}
+
 /* Responsivness */
 
 @media (min-width:767.98px) {
@@ -250,5 +279,15 @@ button {
 
   .popup-inner .event-type select {
     padding: .2rem;
+  }
+}
+
+@media (max-width:390px) {
+  .react-calendar__navigation button {
+    font-size: large !important;
+  }
+
+  .react-calendar__tile {
+    line-height: 1rem !important;
   }
 }

@@ -1,12 +1,14 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 import '../App.css'
 import EventForm from "./EventForm";
+import { EventsContext } from '../utils/EventsContext';
 
 const Event = (props) => {
 
     const [close, open] = useState(false);
+    const {events, setEvents} = useContext(EventsContext);
 
     //This function controls the Event-Form popup
     function togglePopup() {
@@ -14,17 +16,22 @@ const Event = (props) => {
     }
 
 
-    //This function deletes a by comparing it's title form the events array
+    //This function deletes a by comparing it's title from the events array.
     const deleteEventHandler = () => {
-        const newEventsArray = [];
+        try {
+            const newEventsArray = [];
 
-        props.eventsArray.forEach(event => {
-            if(event.title !== props.event.title) {
-                newEventsArray.push(event);
-            }
-        });
-
-        localStorage.setItem(props.date, JSON.stringify(newEventsArray));
+            events.forEach(event => {
+                if(event.title !== props.event.title) {
+                    newEventsArray.push(event);
+                }
+            });
+            setEvents(newEventsArray);
+            localStorage.setItem(props.date, JSON.stringify(newEventsArray));
+            
+        } catch (error) {
+            console.error("Some error occured while deleting event: ", error);
+        }
     }
 
     return (

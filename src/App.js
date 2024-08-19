@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import Calendar from 'react-calendar';
 
 import './App.css';
@@ -8,41 +8,55 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Event from "./Components/Event";
 import EventForm from "./Components/EventForm";
+import { EventsContext } from './utils/EventsContext';
 
 function App() {
 
+  const {events, setEvents} = useContext(EventsContext);
+
   const [close, open] = useState(false);
-  const [eventsArray, setEventsArray] = useState([]);
   const [currentDate, selectedDate] = useState(new Date());
 
 
   //Executes everytime user clicks a date
   const dateChangeHandler = (date) => {
-    selectedDate(date);
+    try {
+      selectedDate(date);
 
-    //This prevent re-rendering of same events if user clicks on same date twice or more.
-    if(currentDate !== date) {
-      const eventsArray = JSON.parse(localStorage.getItem(date));
+      //This prevent re-rendering of same events if user clicks on same date twice or more.
+      if(currentDate !== date) {
+        const eventsArray = JSON.parse(localStorage.getItem(date));
 
-      if(eventsArray) {
-          setEventsArray(eventsArray);
-      } else {
-          setEventsArray([]);
+        if(eventsArray) {
+            setEvents(eventsArray);
+        } else {
+            setEvents([]);
+        }
       }
+
+    } catch (error) {
+      console.error("Some error occured while changing dates: ", error);
     }
   }
 
-  //This functions filters events based on type 
-  const eventTypeHandler = (e) => {
-      const originalEventsArray = JSON.parse(localStorage.getItem(currentDate));
-      const filteredEventsArray = [];
+  //This functions filters events based on their type 
+  const filterEventHandler = (e) => {
+      try {
+        const originalEventsArray = JSON.parse(localStorage.getItem(currentDate));
+        const filteredEventsArray = [];
 
-      originalEventsArray.forEach(event => {
-          if(event.type === e.target.value || e.target.value === "All") {
-              filteredEventsArray.push(event);
-          }
-      });
-      setEventsArray(filteredEventsArray);
+        if(originalEventsArray) {
+          originalEventsArray.forEach(event => {
+            if(event.type === e.target.value || e.target.value === "All") {
+                filteredEventsArray.push(event);
+            }
+          });
+          setEvents(filteredEventsArray);
+        }
+
+      } catch (error) {
+        console.error("Some error occured while filtering events: ", error);
+      }
   }
 
   //This function controls the Event-Form popup
@@ -55,7 +69,10 @@ function App() {
 
       <div className="App-header">
         <nav className="navbar">
-            <h1> My-Calendar-App </h1>
+            <div className="logo">
+              <img src="https://res.cloudinary.com/dhlsmeyw1/image/upload/v1724009747/timetable_1048953_1_iswdjp.png" alt="logo"/>
+              <h1> My-Calendar </h1>
+            </div>
         </nav>
       </div>
 
@@ -76,7 +93,7 @@ function App() {
                 </div>
                 <div className="event-type">
                   <label> Event-Type </label>
-                  <select className="event-type-selector event-type" onChange={eventTypeHandler}>
+                  <select className="event-type-selector" onChange={filterEventHandler}>
                     <option value={"All"} defaultValue={"All"}> All </option>
                     <option value={"Personal"}> Personal </option>
                     <option value={"Professional"}> Professional </option>
@@ -86,9 +103,9 @@ function App() {
               </div>
 
               <div className="events-body">
-                {eventsArray && eventsArray.length ?
-                  eventsArray.map((event, index) => { 
-                    return <Event date={currentDate} event={event} key={index} eventsArray={eventsArray}/>
+                {events && events.length ?
+                  events.map((event, index) => { 
+                    return <Event date={currentDate} event={event} key={index}/>
                   })
                 : null}
               </div>
